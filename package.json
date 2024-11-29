@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:javascripteverywhere/api.git"
+    "url": "git@github.com:DannyTan8x/NodejsAPI.git"
   },
   "nodemonConfig": {
     "ignore": [
@@ -20,7 +20,7 @@
     ]
   },
   "keywords": [],
-  "author": "Adam Scott",
+  "author": "Adam Scott - rework by Danny Tan",
   "license": "MIT",
   "dependencies": {
     "apollo-server-express": "^3.6.0",
