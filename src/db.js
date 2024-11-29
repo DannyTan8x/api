@@ -13,6 +13,7 @@ module.exports = {
      //使用新的伺服器探索和監控引擎
      mongoose.set('useUnifiedTopology', true);
      */
+    mongoose.set('strictQuery', true);
     // 連接至DB
     mongoose.connect(DB_HOST);
     //若連綫失敗，記錄錯誤

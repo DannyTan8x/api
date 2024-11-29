@@ -7,7 +7,8 @@ const models = require('./models');
 // create node.js server by using express
 const express = require('express');
 // turning to API server by using ApolloServer
-const { ApolloServer, gql } = require('apollo-server-express');
+// const { ApolloServer, gql } = require('apollo-server-express'); // gql 已經已轉到 shema.js
+const { ApolloServer } = require('apollo-server-express');
 const port = process.env.PORT || 3000; // port config in .env is 4000
 //將 DB_HOST賦予變數
 const DB_HOST = process.env.DB_HOST;
@@ -17,6 +18,8 @@ let notesData = [
   { id: '2', content: 'This is another note', author: 'Danny Tann' },
   { id: '3', content: 'This is the third note', author: 'Anna Chen' },
 ];
+/*
+移轉到 Schema.js 并且換用 匯入schema 模組
 // using GraphQL to initialize 用 GraphQL 結構描述語言 建立結構描述
 const typeDefs = gql`
   type Note {
@@ -33,6 +36,10 @@ const typeDefs = gql`
     newNote(content: String!, author: String!): Note!
   }
 `;
+*/
+
+/*
+已轉到 resolvers 文件夾
 // 為結構描述欄位提供解析程式函式
 const resolvers = {
   Query: {
@@ -43,39 +50,51 @@ const resolvers = {
       return await models.Note.find();
     },
     // note: (parent, args) => {
-    // return notesData.find((note) => note.id === args.id);
-
-    // },
-    note: async (parent, args) => {
-      return await models.Note.findById(args.id);
+      // return notesData.find((note) => note.id === args.id);
+      
+      // },
+      note: async (parent, args) => {
+        return await models.Note.findById(args.id);
+      },
     },
-  },
+    
+    Mutation: {
+      // newNote: (parent, args) => {
+        //   let noteValue = {
+          //     id: String(notesData.length + 1),
+          //     content: args.content,
+          //     author: 'Danny Tan',
+          //   };
+          //   notesData.push(noteValue);
+          //   return noteValue;
+          // },
+          newNote: async (parent, args) => {
+            return await models.Note.create({
+              content: args.content,
+              author: args.author,
+           });
+         },
+       },
+     };
+*/
+// 匯入 schema 模組
+const typeDefs = require('./schema');
 
-  Mutation: {
-    // newNote: (parent, args) => {
-    //   let noteValue = {
-    //     id: String(notesData.length + 1),
-    //     content: args.content,
-    //     author: 'Danny Tan',
-    //   };
-    //   notesData.push(noteValue);
-    //   return noteValue;
-    // },
-    newNote: async (parent, args) => {
-      return await models.Note.create({
-        content: args.content,
-        author: args.author,
-      });
-    },
-  },
-};
+// 匯入 resolvers 模組
+const resolvers = require('./resolvers');
 
 const app = express();
 
 //連綫 資料庫
 db.connect(DB_HOST);
 // Apollo 設定
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: () => {
+    return { models }; //將 db 模型新增至 context
+  },
+});
 
 async function startServer() {
   await server.start();
