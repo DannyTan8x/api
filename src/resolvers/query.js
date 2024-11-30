@@ -1,4 +1,3 @@
-// const models = require('../models');
 // models 從context 取用
 module.exports = {
   notes: async (parent, args, { models }) => {
