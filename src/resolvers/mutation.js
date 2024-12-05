@@ -1,4 +1,5 @@
 const { models, set } = require('mongoose');
+const mongoose = require('mongoose');
 const { updateOne } = require('../models/note');
 //加密與驗證
 const bcrypt = require('bcrypt');
@@ -12,10 +13,15 @@ require('dotenv').config();
 //取得大頭照的套件
 const gravatar = require('../util/gravatar');
 module.exports = {
-  newNote: async (parent, args, { models }) => {
+  //從 context 中獲取 user
+  newNote: async (parent, args, { models, user }) => {
+    //若context上沒有user， 抛出驗證錯
+    if (!user) {
+      throw new AuthenticationError('You must be signed in to create a note');
+    }
     return await models.Note.create({
       content: args.content,
-      author: args.author,
+      author: mongoose.Types.ObjectId(user.id),
     });
   },
   deleteNote: async (parent, { id }, { models }) => {

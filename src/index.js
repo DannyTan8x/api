@@ -2,7 +2,7 @@
 require('dotenv').config();
 // 匯入 連綫模組
 const db = require('./db');
-// 匯入模組
+// 匯入mongoose模組
 const models = require('./models');
 // create node.js server by using express
 const express = require('express');
@@ -12,14 +12,15 @@ const { ApolloServer } = require('apollo-server-express');
 const port = process.env.PORT || 3000; // port config in .env is 4000
 //將 DB_HOST賦予變數
 const DB_HOST = process.env.DB_HOST;
+//匯入 JWT 模組
+const jwt = require('jsonwebtoken');
 
 let notesData = [
   { id: '1', content: 'This is a note', author: 'Adam Scott' },
   { id: '2', content: 'This is another note', author: 'Danny Tann' },
   { id: '3', content: 'This is the third note', author: 'Anna Chen' },
 ];
-/*
-移轉到 Schema.js 并且換用 匯入schema 模組
+/*移轉到 Schema.js 并且換用 匯入schema 模組
 // using GraphQL to initialize 用 GraphQL 結構描述語言 建立結構描述
 const typeDefs = gql`
   type Note {
@@ -38,8 +39,7 @@ const typeDefs = gql`
 `;
 */
 
-/*
-已轉到 resolvers 文件夾
+/*已轉到 resolvers 文件夾
 // 為結構描述欄位提供解析程式函式
 const resolvers = {
   Query: {
@@ -85,14 +85,28 @@ const resolvers = require('./resolvers');
 
 const app = express();
 
+//從JWT 取得使用者資料
+const getUser = (token) => {
+  if (token) {
+    try {
+      return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      throw new Error('Session invalid');
+    }
+  }
+};
+
 //連綫 資料庫
 db.connect(DB_HOST);
 // Apollo 設定
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: () => {
-    return { models }; //將 db 模型新增至 context
+  context: ({ req }) => {
+    const token = req.headers.authorization;
+    const user = getUser(token);
+    console.log('user: ', user);
+    return { models, user }; //將 db 模型新增至 context
   },
 });
 
