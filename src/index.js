@@ -106,7 +106,7 @@ const server = new ApolloServer({
     const token = req.headers.authorization;
     const user = getUser(token);
     console.log('user: ', user);
-    return { models, user }; //將 db 模型新增至 context
+    return { models, user }; //return 將 db 模型新增至 context
   },
 });
 

@@ -24,15 +24,31 @@ module.exports = {
       author: mongoose.Types.ObjectId(user.id),
     });
   },
-  deleteNote: async (parent, { id }, { models }) => {
+  deleteNote: async (parent, { id }, { models, user }) => {
+    if (!user) {
+      throw new AuthenticationError('You must be signed in to delete a note');
+    }
+    const note = await models.Note.findById(id);
+    if (note && String(note.author) !== user.id) {
+      throw new ForbiddenError("you don't have permissions to delete the note");
+    }
     try {
-      await models.Note.findOneAndRemove({ _id: id });
+      //   await models.Note.findOneAndRemove({ _id: id });
+      await note.remove();
       return true;
     } catch (err) {
       return false;
     }
   },
-  updateNote: async (parent, { content, id }, { models }) => {
+  updateNote: async (parent, { content, id }, { models, user }) => {
+    if (!user) {
+      throw await AuthenticationError('You must be signed in to update a note');
+    }
+
+    const note = await models.Note.findById(id);
+    if (note && String(note.author) !== user.id) {
+      throw new ForbiddenError("You don't have permision to update the note");
+    }
     return await models.Note.findOneAndUpdate(
       {
         _id: id,
