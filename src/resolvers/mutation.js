@@ -103,4 +103,47 @@ module.exports = {
 
     return jwt.sign({ id: user._id }, process.env.JWT_SECRET);
   },
+  toggleFavorite: async (parent, { id }, { models, user }) => {
+    if (!user) {
+      throw new AuthenticationError();
+    }
+    // 檢查使用者是否已經將注解加入最愛
+    let noteCheck = await models.Note.findById(id);
+    const hasUser = noteCheck.favoritedBy.indexOf(user.id);
+
+    //如果使用者存在於清單中
+    //將該使用者從清單中提取並將favoriteCount -1
+    if (hasUser >= 0) {
+      return await models.Note.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            favoritedBy: mongoose.Types.ObjectId(user.id),
+          },
+          $inc: { favoriteCount: -1 },
+        },
+        {
+          // 將 new 設為 true 以回傳更新后的文件
+          new: true,
+        }
+      );
+    } else {
+      //如果使用者不存在於清單中
+      //將該使用者加入清單 并將 faforiteCount + 1
+      return await models.Note.findByIdAndUpdate(
+        id,
+        {
+          $push: {
+            favoritedBy: mongoose.Types.ObjectId(user.id),
+          },
+          $inc: {
+            favoriteCount: 1,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+    }
+  },
 };

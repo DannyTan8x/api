@@ -13,6 +13,13 @@ const noteShema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    //新增 favoriteCount
+    favoriteCount: {
+      type: Number,
+      default: 0,
+    },
+    //新增 favoritedBy
+    favoritedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   },
   {
     //使用Date 類型指派 createAt 和 updateAt 欄位
