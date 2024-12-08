@@ -14,6 +14,10 @@ const port = process.env.PORT || 3000; // port config in .env is 4000
 const DB_HOST = process.env.DB_HOST;
 //匯入 JWT 模組
 const jwt = require('jsonwebtoken');
+//匯入套件
+const helmet = require('helmet');
+//匯入 CORS套件
+const cors = require('cors');
 
 let notesData = [
   { id: '1', content: 'This is a note', author: 'Adam Scott' },
@@ -84,6 +88,9 @@ const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
 
 const app = express();
+//堆叠中介軟體：
+app.use(helmet());
+app.use(cors());
 
 //從JWT 取得使用者資料
 const getUser = (token) => {
