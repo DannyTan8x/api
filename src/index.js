@@ -19,11 +19,15 @@ const helmet = require('helmet');
 //匯入 CORS套件
 const cors = require('cors');
 
-let notesData = [
-  { id: '1', content: 'This is a note', author: 'Adam Scott' },
-  { id: '2', content: 'This is another note', author: 'Danny Tann' },
-  { id: '3', content: 'This is the third note', author: 'Anna Chen' },
-];
+// 在檔案最上方匯入模組
+const depthLimit = require('graphql-depth-limit');
+const { createComplexityLimitRule } = require('graphql-validation-complexity');
+
+// let notesData = [
+//   { id: '1', content: 'This is a note', author: 'Adam Scott' },
+//   { id: '2', content: 'This is another note', author: 'Danny Tann' },
+//   { id: '3', content: 'This is the third note', author: 'Anna Chen' },
+// ];
 /*移轉到 Schema.js 并且換用 匯入schema 模組
 // using GraphQL to initialize 用 GraphQL 結構描述語言 建立結構描述
 const typeDefs = gql`
@@ -106,13 +110,15 @@ const getUser = (token) => {
 //連綫 資料庫
 db.connect(DB_HOST);
 // Apollo 設定
+// 更新 ApolloServer 加入 validationRules
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  validationRules: [depthLimit(5), createComplexityLimitRule(1000)],
   context: ({ req }) => {
     const token = req.headers.authorization;
     const user = getUser(token);
-    console.log('user: ', user);
+    // console.log('user: ', user);
     return { models, user }; //return 將 db 模型新增至 context
   },
 });
