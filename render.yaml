@@ -3,10 +3,15 @@ services:
     name: notely-api
     env: node
     buildCommand: npm install
-    startCommand: node src/index.js # Or the command to start your Node.js server
-    plan: free # Or the plan you're using
-    region: oregon # Adjust based on your target region
-    healthCheckPath: /api # Set the path to check the health of your GraphQL API
+    startCommand: npm start
+    plan: free
+    healthCheckPath: /api
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 4000 # Or the port you are using
+      - key: JWT_SECRET
+        value: DannyPassphrase
+      - key: DB_HOST
+        value: mongodb+srv://JEWL:HGlyqD1ya37TUYS0@cluster0.zh2go.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
