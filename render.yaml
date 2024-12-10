@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: notely-api
+    env: node
+    buildCommand: npm install
+    startCommand: node src/index.js # Or the command to start your Node.js server
+    plan: free # Or the plan you're using
+    region: oregon # Adjust based on your target region
+    healthCheckPath: /graphql # Set the path to check the health of your GraphQL API
+    envVars:
+      - key: NODE_ENV
+        value: production
