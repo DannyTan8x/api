@@ -6,10 +6,13 @@ const db = require('./db');
 const models = require('./models');
 // create node.js server by using express
 const express = require('express');
+// import swagger libary
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 // turning to API server by using ApolloServer
 // const { ApolloServer, gql } = require('apollo-server-express'); // gql 已經已轉到 shema.js
 const { ApolloServer } = require('apollo-server-express');
-const port = process.env.PORT || 3000; // port config in .env is 4000
+const port = process.env.PORT || 1000; // port config in .env is 4000
 //將 DB_HOST賦予變數
 const DB_HOST = process.env.DB_HOST;
 //匯入 JWT 模組
@@ -96,8 +99,30 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 
+// Swagger configuration
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'My A P I ',
+    version: '1.0.0',
+    description: 'API documentation for my Node.js app',
+  },
+  // ... other Swagger configuration options
+};
+
+const options = {
+  swaggerDefinition,
+  apis: ['./routes/*.js'], // Specify the files containing your API routes
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 //從JWT 取得使用者資料
 const getUser = (token) => {
+  console.log(token);
   if (token) {
     try {
       return jwt.verify(token, process.env.JWT_SECRET);
@@ -118,7 +143,7 @@ const server = new ApolloServer({
   context: ({ req }) => {
     const token = req.headers.authorization;
     const user = getUser(token);
-    // console.log('user: ', user);
+    console.log('user: ', user);
     return { models, user }; //return 將 db 模型新增至 context
   },
 });
