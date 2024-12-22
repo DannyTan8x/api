@@ -12,7 +12,7 @@ const swaggerUi = require('swagger-ui-express');
 // turning to API server by using ApolloServer
 // const { ApolloServer, gql } = require('apollo-server-express'); // gql 已經已轉到 shema.js
 const { ApolloServer } = require('apollo-server-express');
-const port = process.env.PORT || 1000; // port config in .env is 4000
+const port = process.env.PORT || 4000; // port config in .env is 4000
 //將 DB_HOST賦予變數
 const DB_HOST = process.env.DB_HOST;
 //匯入 JWT 模組
