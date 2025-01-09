@@ -10,7 +10,7 @@ module.exports = {
   },
   noteFeed: async (parent, { cursor }, { models }) => {
     //將限制硬編碼為10個項目
-    const limit = 2;
+    const limit = 10;
     //將預設的 hasNextPage 值設爲false
     let hasNextPage = false;
     // 若未傳遞游標， 側預設查詢將是空的
