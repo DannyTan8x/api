@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 module.exports = {
   connect: (DB_HOST) => {
-    /*
+    /* 
    mongoDB 第7版本以上就不需要特別宣告： 
      // 使用 mongo 驅動程式更新後的URL字串
      mongoose.set('useNewUrlParse', true);
